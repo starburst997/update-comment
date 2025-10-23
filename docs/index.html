@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Comment - GitHub Action</title>
+    <meta
+      name="description"
+      content="A lightweight GitHub composite action to create or update PR comments using the gh CLI"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #e6edf3;
+        background: #0d1117;
+        min-height: 100vh;
+      }
+
+      .hero-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+        z-index: -1;
+      }
+
+      .hero-accent {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, #238636 0%, transparent 70%);
+        opacity: 0.1;
+        top: -300px;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        padding: 2rem 0;
+        text-align: center;
+      }
+
+      .hero {
+        padding: 4rem 0 6rem;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #58a6ff, #238636);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: #8b949e;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        background: #238636;
+        color: #ffffff;
+        border: 1px solid #238636;
+      }
+
+      .btn-primary:hover {
+        background: #2ea043;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 30px rgba(35, 134, 54, 0.4);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #e6edf3;
+        border: 2px solid #30363d;
+      }
+
+      .btn-secondary:hover {
+        background: #21262d;
+        border-color: #484f58;
+      }
+
+      .features-section {
+        background: #161b22;
+        border-top: 1px solid #30363d;
+        border-bottom: 1px solid #30363d;
+        padding: 5rem 0;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
+        margin-top: 3rem;
+      }
+
+      .feature {
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.8rem;
+      }
+
+      .feature h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: #58a6ff;
+      }
+
+      .feature p {
+        color: #8b949e;
+        line-height: 1.7;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #e6edf3;
+        margin-bottom: 1rem;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: #8b949e;
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .code-section {
+        padding: 4rem 0;
+        background: #0d1117;
+      }
+
+      .code-container {
+        max-width: 800px;
+        margin: 3rem auto 0;
+        background: #161b22;
+        border-radius: 12px;
+        border: 1px solid #30363d;
+        overflow: hidden;
+      }
+
+      .code-header {
+        background: #21262d;
+        padding: 0.75rem 1.5rem;
+        border-bottom: 1px solid #30363d;
+        color: #8b949e;
+        font-size: 0.9rem;
+        font-family: monospace;
+      }
+
+      .code-content {
+        padding: 1.5rem;
+        overflow-x: auto;
+      }
+
+      pre {
+        margin: 0;
+        font-family: "Monaco", "Courier New", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #e6edf3;
+      }
+
+      .code-comment {
+        color: #8b949e;
+      }
+
+      .code-keyword {
+        color: #ff7b72;
+      }
+
+      .code-string {
+        color: #a5d6ff;
+      }
+
+      .code-property {
+        color: #79c0ff;
+      }
+
+      footer {
+        background: #0d1117;
+        padding: 3rem 0;
+        text-align: center;
+        color: #8b949e;
+        border-top: 1px solid #30363d;
+      }
+
+      footer a {
+        color: #58a6ff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        color: #79c0ff;
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .tagline {
+          font-size: 1.2rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-background">
+      <div class="hero-accent"></div>
+    </div>
+
+    <header>
+      <div class="container">
+        <nav>
+          <a
+            href="https://github.com/starburst997/update-comment"
+            class="btn btn-secondary"
+          >
+            View on GitHub →
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container">
+        <h1>Update Comment</h1>
+        <p class="tagline">
+          A lightweight GitHub Action to create or update PR comments using the
+          first line as an identifier
+        </p>
+        <div class="cta-buttons">
+          <a
+            href="https://github.com/marketplace/actions/update-comment"
+            class="btn btn-primary"
+          >
+            📦 Get from Marketplace
+          </a>
+          <a
+            href="https://github.com/starburst997/update-comment#readme"
+            class="btn btn-secondary"
+          >
+            📖 Read the Docs
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Why Update Comment?</h2>
+        <p class="section-subtitle">
+          Simple, efficient PR comment management for your workflows
+        </p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <h3>Simple Identifier</h3>
+            <p>
+              Uses the first line of your comment as a unique identifier. No
+              need to track comment IDs manually.
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightweight</h3>
+            <p>
+              Pure composite action using gh CLI. No JavaScript runtime or
+              external dependencies required.
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔄</div>
+            <h3>Smart Updates</h3>
+            <p>
+              Automatically creates new comments or updates existing ones.
+              Perfect for deployment status updates.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="code-section">
+      <div class="container">
+        <h2 class="section-title">Quick Start</h2>
+        <p class="section-subtitle">
+          Add it to your workflow in seconds
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            .github/workflows/deploy.yml
+          </div>
+          <div class="code-content">
+            <pre><span class="code-keyword">- name:</span> <span class="code-string">Update PR Comment</span>
+  <span class="code-keyword">uses:</span> <span class="code-string">starburst997/update-comment@v1</span>
+  <span class="code-keyword">with:</span>
+    <span class="code-property">body:</span> <span class="code-string">|
+      ## Deployment Status 🚀
+
+      | Latest commit | ${{ github.sha }} |
+      |:--------------|:------------------|
+      | **Status** | ✅ Deployed |
+      | **URL** | https://preview.example.com |</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p>
+          <a href="https://github.com/starburst997/update-comment">GitHub</a> •
+          <a href="https://github.com/starburst997/update-comment/issues">Issues</a> •
+          <a href="https://github.com/starburst997/update-comment/releases">Releases</a>
+        </p>
+        <p style="margin-top: 1rem; color: #484f58;">
+          Made with 💬 by JD Boivin
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
