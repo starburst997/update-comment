@@ -1,0 +1,80 @@
+name: "Update PR Comment"
+description: "Create or update a PR comment using the first line as an identifier"
+author: "JD Boivin"
+
+inputs:
+  token:
+    description: "GitHub token for authentication"
+    required: false
+    default: ${{ github.token }}
+  issue-number:
+    description: "Pull request or issue number (defaults to current PR number)"
+    required: false
+    default: ""
+  body:
+    description: "Comment body. The first line is used to identify the comment for updates."
+    required: true
+
+outputs:
+  comment-id:
+    description: "The ID of the created or updated comment"
+    value: ${{ steps.update-comment.outputs.comment-id }}
+  comment-url:
+    description: "The URL of the created or updated comment"
+    value: ${{ steps.update-comment.outputs.comment-url }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Update Comment
+      id: update-comment
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ISSUE_NUMBER_INPUT: ${{ inputs.issue-number }}
+        COMMENT_BODY: ${{ inputs.body }}
+      run: |
+        # Use provided issue number or default to PR number
+        if [ -z "$ISSUE_NUMBER_INPUT" ]; then
+          ISSUE_NUMBER="${{ github.event.pull_request.number }}"
+          echo "Using default PR number: $ISSUE_NUMBER"
+        else
+          ISSUE_NUMBER="$ISSUE_NUMBER_INPUT"
+          echo "Using provided issue number: $ISSUE_NUMBER"
+        fi
+
+        # Extract first line to use as identifier
+        FIRST_LINE=$(echo "$COMMENT_BODY" | head -n 1)
+        echo "Searching for comment with identifier: $FIRST_LINE"
+
+        # Search for existing comment containing the first line
+        COMMENT_ID=$(gh api \
+          repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/comments \
+          --jq ".[] | select(.body | startswith(\"$FIRST_LINE\")) | .id" \
+          | head -n 1)
+
+        if [ -z "$COMMENT_ID" ]; then
+          echo "No existing comment found. Creating new comment..."
+          RESPONSE=$(gh api \
+            repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/comments \
+            -f body="$COMMENT_BODY")
+          COMMENT_ID=$(echo "$RESPONSE" | jq -r '.id')
+          COMMENT_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+          echo "Created comment with ID: $COMMENT_ID"
+        else
+          echo "Found existing comment with ID: $COMMENT_ID. Updating..."
+          RESPONSE=$(gh api \
+            --method PATCH \
+            repos/${{ github.repository }}/issues/comments/${COMMENT_ID} \
+            -f body="$COMMENT_BODY")
+          COMMENT_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+          echo "Updated comment with ID: $COMMENT_ID"
+        fi
+
+        echo "comment-id=$COMMENT_ID" >> $GITHUB_OUTPUT
+        echo "comment-url=$COMMENT_URL" >> $GITHUB_OUTPUT
+        echo "Comment URL: $COMMENT_URL"
+
+branding:
+  icon: "message-circle"
+  color: "blue"
