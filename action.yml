@@ -13,7 +13,55 @@ inputs:
     default: ""
   body:
     description: "Comment body. The first line is used to identify the comment for updates."
-    required: true
+    required: false
+  template-pr-cleanup:
+    description: "Use PR cleanup template"
+    required: false
+    default: "false"
+  template-pr-deploy:
+    description: "Use PR deploy template"
+    required: false
+    default: "false"
+  template-repository-name:
+    description: "Repository name for template (e.g., github.event.repository.name)"
+    required: false
+    default: ${{ github.event.repository.name }}
+  template-sha:
+    description: "Commit SHA for template (e.g., github.sha)"
+    required: false
+    default: ${{ github.sha }}
+  template-status:
+    description: "Status for template: 'success', 'progress', or 'fail'"
+    required: false
+    default: ""
+  template-version:
+    description: "Version for template"
+    required: false
+    default: ""
+  template-future-version:
+    description: "Future version for template"
+    required: false
+    default: ""
+  template-environment:
+    description: "Environment for template"
+    required: false
+    default: ""
+  template-url:
+    description: "URL for template"
+    required: false
+    default: ""
+  template-pattern:
+    description: "Pattern for cleanup template"
+    required: false
+    default: ""
+  template-versions-markdown:
+    description: "Versions markdown for cleanup template"
+    required: false
+    default: ""
+  template-logs-url:
+    description: "Logs URL for template"
+    required: false
+    default: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 outputs:
   comment-id:
@@ -33,6 +81,18 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
         ISSUE_NUMBER_INPUT: ${{ inputs.issue-number }}
         COMMENT_BODY: ${{ inputs.body }}
+        TEMPLATE_PR_CLEANUP: ${{ inputs.template-pr-cleanup }}
+        TEMPLATE_PR_DEPLOY: ${{ inputs.template-pr-deploy }}
+        TEMPLATE_REPOSITORY_NAME: ${{ inputs.template-repository-name }}
+        TEMPLATE_SHA: ${{ inputs.template-sha }}
+        TEMPLATE_STATUS: ${{ inputs.template-status }}
+        TEMPLATE_VERSION: ${{ inputs.template-version }}
+        TEMPLATE_FUTURE_VERSION: ${{ inputs.template-future-version }}
+        TEMPLATE_ENVIRONMENT: ${{ inputs.template-environment }}
+        TEMPLATE_URL: ${{ inputs.template-url }}
+        TEMPLATE_PATTERN: ${{ inputs.template-pattern }}
+        TEMPLATE_VERSIONS_MARKDOWN: ${{ inputs.template-versions-markdown }}
+        TEMPLATE_LOGS_URL: ${{ inputs.template-logs-url }}
       run: |
         # Use provided issue number or default to PR number
         if [ -z "$ISSUE_NUMBER_INPUT" ]; then
@@ -41,6 +101,59 @@ runs:
         else
           ISSUE_NUMBER="$ISSUE_NUMBER_INPUT"
           echo "Using provided issue number: $ISSUE_NUMBER"
+        fi
+
+        # Map status to display text
+        case "$TEMPLATE_STATUS" in
+          "success")
+            STATUS_DISPLAY="✅ Deploy successful!"
+            ;;
+          "progress")
+            STATUS_DISPLAY="🟡 Deploy in progress..."
+            ;;
+          "fail")
+            STATUS_DISPLAY="❌ Deploy failed"
+            ;;
+          *)
+            STATUS_DISPLAY="$TEMPLATE_STATUS"
+            ;;
+        esac
+
+        # Generate body from template if requested
+        if [ "$TEMPLATE_PR_CLEANUP" = "true" ]; then
+          echo "Using PR cleanup template"
+          COMMENT_BODY="## Deploying ${TEMPLATE_REPOSITORY_NAME} 🚀
+
+        | Status | 🧹 **Cleaned up** |
+        |:-------|:------------------|
+        | **Environment** | \`${TEMPLATE_ENVIRONMENT}\` |
+        | **Pattern** | \`${TEMPLATE_PATTERN}\` |
+        | **Version** | \`${TEMPLATE_FUTURE_VERSION}\` |
+
+        **Cleanup completed:**
+        - ✓ Git tags deleted
+        - ✓ Docker images removed from registry
+        - ✓ Helm charts removed from registry
+        - ✓ GitHub deployments deleted
+
+        **Versions cleaned:**
+        ${TEMPLATE_VERSIONS_MARKDOWN:-_No versions found_}"
+        elif [ "$TEMPLATE_PR_DEPLOY" = "true" ]; then
+          echo "Using PR deploy template"
+          COMMENT_BODY="## Deploying ${TEMPLATE_REPOSITORY_NAME} 🚀
+
+        | Latest commit | ${TEMPLATE_SHA} |
+        |:--------------|:----------------|
+        | **Status** | ${STATUS_DISPLAY} |
+        | **Version** | \`${TEMPLATE_VERSION}\` |
+        | **Future Version** | \`${TEMPLATE_FUTURE_VERSION}\` |
+        | **Environment** | \`${TEMPLATE_ENVIRONMENT}\` |
+        | **URL** | ${TEMPLATE_URL} |
+
+        [View logs](${TEMPLATE_LOGS_URL})"
+        elif [ -z "$COMMENT_BODY" ]; then
+          echo "Error: Either body or a template must be provided"
+          exit 1
         fi
 
         # Extract first line to use as identifier
