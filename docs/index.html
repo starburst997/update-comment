@@ -233,6 +233,82 @@
         color: #79c0ff;
       }
 
+      .api-section {
+        padding: 4rem 0;
+        background: #161b22;
+      }
+
+      .api-tables {
+        max-width: 900px;
+        margin: 3rem auto 0;
+      }
+
+      .api-table-container {
+        margin-bottom: 3rem;
+      }
+
+      .api-table-container h3 {
+        color: #58a6ff;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      table {
+        width: 100%;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        border-collapse: collapse;
+        overflow: hidden;
+      }
+
+      th {
+        background: #21262d;
+        color: #e6edf3;
+        font-weight: 600;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #30363d;
+      }
+
+      td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #30363d;
+        color: #8b949e;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      td:first-child {
+        color: #a5d6ff;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+
+      .required-badge {
+        display: inline-block;
+        background: #da3633;
+        color: #ffffff;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+      }
+
+      .optional-badge {
+        display: inline-block;
+        background: #30363d;
+        color: #8b949e;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+      }
+
       footer {
         background: #0d1117;
         padding: 3rem 0;
@@ -294,7 +370,7 @@
       <div class="container">
         <h1>Update Comment</h1>
         <p class="tagline">
-          A lightweight GitHub Action to create or update PR comments using the
+          A lightweight GitHub Action to create or update PR comments (and linked issues) using the
           first line as an identifier
         </p>
         <div class="cta-buttons">
@@ -345,7 +421,7 @@
             <h3>Smart Updates</h3>
             <p>
               Automatically creates new comments or updates existing ones.
-              Perfect for deployment status updates.
+              Syncs to linked issues too!
             </p>
           </div>
         </div>
@@ -374,6 +450,154 @@
       |:--------------|:------------------|
       | **Status** | ✅ Deployed |
       | **URL** | https://preview.example.com |</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <div class="container">
+        <h2 class="section-title">API Reference</h2>
+        <p class="section-subtitle">
+          Complete list of inputs and outputs
+        </p>
+
+        <div class="api-tables">
+          <div class="api-table-container">
+            <h3>Core Inputs</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Description</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>token</td>
+                  <td>GitHub token for authentication <span class="optional-badge">optional</span></td>
+                  <td><code>${{ github.token }}</code></td>
+                </tr>
+                <tr>
+                  <td>issue-number</td>
+                  <td>Pull request or issue number <span class="optional-badge">optional</span></td>
+                  <td><code>${{ github.event.pull_request.number }}</code></td>
+                </tr>
+                <tr>
+                  <td>body</td>
+                  <td>Comment body (first line used as identifier) <span class="required-badge">required</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>update-linked-issue</td>
+                  <td>Update linked issue comments automatically <span class="optional-badge">optional</span></td>
+                  <td><code>true</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="api-table-container">
+            <h3>Template Selection (optional, boolean)</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>template-pr-deploy</td>
+                  <td>Use PR deploy template</td>
+                </tr>
+                <tr>
+                  <td>template-pr-cleanup</td>
+                  <td>Use PR cleanup template</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="api-table-container">
+            <h3>Template Parameters (optional)</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>template-repository-name</td>
+                  <td>Repository name for template</td>
+                </tr>
+                <tr>
+                  <td>template-sha</td>
+                  <td>Commit SHA for template</td>
+                </tr>
+                <tr>
+                  <td>template-status</td>
+                  <td>Status: 'success', 'progress', or 'fail'</td>
+                </tr>
+                <tr>
+                  <td>template-version</td>
+                  <td>Version for template</td>
+                </tr>
+                <tr>
+                  <td>template-future-version</td>
+                  <td>Future version for template</td>
+                </tr>
+                <tr>
+                  <td>template-environment</td>
+                  <td>Environment for template</td>
+                </tr>
+                <tr>
+                  <td>template-url</td>
+                  <td>URL for template</td>
+                </tr>
+                <tr>
+                  <td>template-pattern</td>
+                  <td>Pattern for cleanup template</td>
+                </tr>
+                <tr>
+                  <td>template-versions-markdown</td>
+                  <td>Versions markdown for cleanup template</td>
+                </tr>
+                <tr>
+                  <td>template-logs-url</td>
+                  <td>Logs URL for template</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="api-table-container">
+            <h3>Outputs</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Output</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>comment-id</td>
+                  <td>The ID of the created or updated comment</td>
+                </tr>
+                <tr>
+                  <td>comment-url</td>
+                  <td>The URL of the created or updated comment</td>
+                </tr>
+                <tr>
+                  <td>comment-body</td>
+                  <td>The body of the created or updated comment</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

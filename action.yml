@@ -62,6 +62,10 @@ inputs:
     description: "Logs URL for template"
     required: false
     default: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  update-linked-issue:
+    description: "Whether to also update linked issue comments (default: true)"
+    required: false
+    default: 'true'
 
 outputs:
   comment-id:
@@ -70,6 +74,9 @@ outputs:
   comment-url:
     description: "The URL of the created or updated comment"
     value: ${{ steps.update-comment.outputs.comment-url }}
+  comment-body:
+    description: "The body of the created or updated comment"
+    value: ${{ steps.update-comment.outputs.comment-body }}
 
 runs:
   using: "composite"
@@ -186,7 +193,97 @@ runs:
 
         echo "comment-id=$COMMENT_ID" >> $GITHUB_OUTPUT
         echo "comment-url=$COMMENT_URL" >> $GITHUB_OUTPUT
+        echo "comment-body<<EOF" >> $GITHUB_OUTPUT
+        echo "$COMMENT_BODY" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
         echo "Comment URL: $COMMENT_URL"
+
+    - name: Update Linked Issue Comment
+      id: update-linked-issue
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ISSUE_NUMBER_INPUT: ${{ inputs.issue-number }}
+        COMMENT_BODY: ${{ steps.update-comment.outputs.comment-body }}
+        UPDATE_LINKED_ISSUE: ${{ inputs.update-linked-issue }}
+      run: |
+        # Check if feature is enabled
+        if [ "$UPDATE_LINKED_ISSUE" != "true" ]; then
+          echo "Linked issue update is disabled"
+          exit 0
+        fi
+
+        # Only proceed if we're in a PR context and not explicitly targeting an issue
+        if [ -z "${{ github.event.pull_request.number }}" ] || [ -n "$ISSUE_NUMBER_INPUT" ]; then
+          echo "Skipping linked issue update: not in PR context or explicit issue number provided"
+          exit 0
+        fi
+
+        PR_NUMBER="${{ github.event.pull_request.number }}"
+        echo "Looking for linked issues in PR #$PR_NUMBER"
+
+        # First, try to get linked issues using GitHub's timeline API
+        # This captures issues linked via "closes #X", "fixes #X", etc.
+        LINKED_ISSUE=$(gh api \
+          repos/${{ github.repository }}/issues/${PR_NUMBER}/timeline \
+          --jq '.[] | select(.event == "connected") | .source.issue.number' \
+          | head -n 1)
+
+        # If no linked issue found via timeline, parse PR body for #XXX references
+        if [ -z "$LINKED_ISSUE" ]; then
+          echo "No linked issue found via timeline API, checking PR body..."
+          PR_BODY=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq '.body')
+
+          # Extract first issue reference (#XXX) from PR body
+          # This regex matches #followed by digits (issue number)
+          LINKED_ISSUE=$(echo "$PR_BODY" | grep -oE '#[0-9]+' | head -n 1 | tr -d '#')
+        fi
+
+        if [ -z "$LINKED_ISSUE" ]; then
+          echo "No linked issue found"
+          exit 0
+        fi
+
+        echo "Found linked issue: #$LINKED_ISSUE"
+
+        # Verify the linked issue exists and is actually an issue (not a PR)
+        ISSUE_TYPE=$(gh api repos/${{ github.repository }}/issues/${LINKED_ISSUE} --jq '.pull_request // empty')
+
+        if [ -n "$ISSUE_TYPE" ]; then
+          echo "Linked item #$LINKED_ISSUE is a PR, not an issue. Skipping."
+          exit 0
+        fi
+
+        echo "Updating comment in linked issue #$LINKED_ISSUE"
+
+        # Extract first line to use as identifier
+        FIRST_LINE=$(echo "$COMMENT_BODY" | head -n 1)
+
+        # Search for existing comment in the linked issue
+        ISSUE_COMMENT_ID=$(gh api \
+          repos/${{ github.repository }}/issues/${LINKED_ISSUE}/comments \
+          --jq ".[] | select(.body | startswith(\"$FIRST_LINE\")) | .id" \
+          | head -n 1)
+
+        if [ -z "$ISSUE_COMMENT_ID" ]; then
+          echo "Creating new comment in linked issue #$LINKED_ISSUE"
+          RESPONSE=$(gh api \
+            repos/${{ github.repository }}/issues/${LINKED_ISSUE}/comments \
+            -f body="$COMMENT_BODY")
+          ISSUE_COMMENT_ID=$(echo "$RESPONSE" | jq -r '.id')
+          ISSUE_COMMENT_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+          echo "Created comment with ID: $ISSUE_COMMENT_ID"
+        else
+          echo "Updating existing comment in linked issue #$LINKED_ISSUE (ID: $ISSUE_COMMENT_ID)"
+          RESPONSE=$(gh api \
+            --method PATCH \
+            repos/${{ github.repository }}/issues/comments/${ISSUE_COMMENT_ID} \
+            -f body="$COMMENT_BODY")
+          ISSUE_COMMENT_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+          echo "Updated comment with ID: $ISSUE_COMMENT_ID"
+        fi
+
+        echo "Linked issue comment URL: $ISSUE_COMMENT_URL"
 
 branding:
   icon: "message-circle"
