@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -16,8 +16,7 @@
       }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         line-height: 1.6;
         color: #e6edf3;
@@ -370,8 +369,8 @@
       <div class="container">
         <h1>Update Comment</h1>
         <p class="tagline">
-          A lightweight GitHub Action to create or update PR comments (and linked issues) using the
-          first line as an identifier
+          A lightweight GitHub Action to create or update PR comments (and
+          linked issues) using the first line as an identifier
         </p>
         <div class="cta-buttons">
           <a
@@ -420,8 +419,8 @@
             <div class="feature-icon">🔄</div>
             <h3>Smart Updates</h3>
             <p>
-              Automatically creates new comments or updates existing ones.
-              Syncs to linked issues too!
+              Automatically creates new comments or updates existing ones. Syncs
+              to linked issues too!
             </p>
           </div>
         </div>
@@ -431,14 +430,10 @@
     <section class="code-section">
       <div class="container">
         <h2 class="section-title">Quick Start</h2>
-        <p class="section-subtitle">
-          Add it to your workflow in seconds
-        </p>
+        <p class="section-subtitle">Add it to your workflow in seconds</p>
 
         <div class="code-container">
-          <div class="code-header">
-            .github/workflows/deploy.yml
-          </div>
+          <div class="code-header">.github/workflows/deploy.yml</div>
           <div class="code-content">
             <pre><span class="code-keyword">- name:</span> <span class="code-string">Update PR Comment</span>
   <span class="code-keyword">uses:</span> <span class="code-string">starburst997/update-comment@v1</span>
@@ -458,9 +453,7 @@
     <section class="api-section">
       <div class="container">
         <h2 class="section-title">API Reference</h2>
-        <p class="section-subtitle">
-          Complete list of inputs and outputs
-        </p>
+        <p class="section-subtitle">Complete list of inputs and outputs</p>
 
         <div class="api-tables">
           <div class="api-table-container">
@@ -476,22 +469,34 @@
               <tbody>
                 <tr>
                   <td>token</td>
-                  <td>GitHub token for authentication <span class="optional-badge">optional</span></td>
+                  <td>
+                    GitHub token for authentication
+                    <span class="optional-badge">optional</span>
+                  </td>
                   <td><code>${{ github.token }}</code></td>
                 </tr>
                 <tr>
                   <td>issue-number</td>
-                  <td>Pull request or issue number <span class="optional-badge">optional</span></td>
+                  <td>
+                    Pull request or issue number
+                    <span class="optional-badge">optional</span>
+                  </td>
                   <td><code>${{ github.event.pull_request.number }}</code></td>
                 </tr>
                 <tr>
                   <td>body</td>
-                  <td>Comment body (first line used as identifier) <span class="required-badge">required</span></td>
+                  <td>
+                    Comment body (first line used as identifier)
+                    <span class="required-badge">required</span>
+                  </td>
                   <td>-</td>
                 </tr>
                 <tr>
                   <td>update-linked-issue</td>
-                  <td>Update linked issue comments automatically <span class="optional-badge">optional</span></td>
+                  <td>
+                    Update linked issue comments automatically
+                    <span class="optional-badge">optional</span>
+                  </td>
                   <td><code>true</code></td>
                 </tr>
               </tbody>
@@ -607,14 +612,18 @@
       <div class="container">
         <p>
           <a href="https://github.com/starburst997/update-comment">GitHub</a> •
-          <a href="https://github.com/starburst997/update-comment/issues">Issues</a> •
-          <a href="https://github.com/starburst997/update-comment/releases">Releases</a>
+          <a href="https://github.com/starburst997/update-comment/issues"
+            >Issues</a
+          >
+          •
+          <a href="https://github.com/starburst997/update-comment/releases"
+            >Releases</a
+          >
         </p>
-        <p style="margin-top: 1rem; color: #484f58;">
+        <p style="margin-top: 1rem; color: #484f58">
           Made with 💬 by JD Boivin
         </p>
       </div>
     </footer>
   </body>
 </html>
- 
