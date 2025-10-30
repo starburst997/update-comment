@@ -7,6 +7,9 @@ on:
     paths:
       - "docs/**"
 
+permissions:
+  id-token: write
+
 jobs:
   deploy:
     uses: starburst997/workflows/.github/workflows/gh-pages.yaml@v1
