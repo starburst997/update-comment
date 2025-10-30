@@ -222,42 +222,48 @@ MIT
 ---
 
 ```
-                             .::/++/::.
-                         .:/oyhdddddddhs+:.
-                      .:+shddddddddddddddhs+:.
-                    .+yddddddddddddddddddddddy/.
-                   /yddddddddddddddddddddddddddh:
-                 .+dddddddddddddddddddddddddddddds.
-                .oddddddddddddddddddddddddddddddddh-
-               -hddddddddddddddddddddddddddddddddddh.
-              .hddddddddddddddddddddddddddddddddddddy
-              /dddddddddddddddddddddddddddddddddddddd:
-             .hdddddddddddddddddddddddddddddddddddddd+
-             -dddddddddddddddddddddddddddddddddddddddd:
-             +dddddddddddddddddddddddddddddddddddddddd+
-             sddddddddddddddddddddddddddddddddddddddddy
-             hddddddddddddddddddddddddddddddddddddddddd
-             hddddddddddddddddddddddddddddddddddddddddd
-             dddddddddddddddddddddddddddddddddddddddddd
-             dddddddddddd#######ddd#######dddddddddddd
-             ddddddddddd##dddddd###dddddd##ddddddddddd
-             ddddddddddd##dddddd###dddddd##ddddddddddd
-             ddddddddddd##dddddd###dddddd##ddddddddddd
-             dddddddddddd#######ddd#######dddddddddddd
-             hdddddddddddddddddddddddddddddddddddddddd
-             hdddddddddddddddddddddddddddddddddddddddd
-             sddddddddddddd############dddddddddddddd-
-             +dddddddddddd##############ddddddddddddy
-             -dddddddddddd##############dddddddddddh.
-             .hddddddddddd##############ddddddddddh:
-              /ddddddddddddd############dddddddddh/
-              .hdddddddddddddd########ddddddddddd+
-               -hddddddddddddddddddddddddddddddds.
-                .odddddddddddddddddddddddddddddo.
-                 .+ddddddddddddddddddddddddddh/
-                   /ydddddddddddddddddddddddy:
-                    .+ydddddddddddddddddddh+.
-                      .:+shdddddddddddhso:.
-                         .:/oyhddddhyo/:.
-                             .::///::.
+                           ___
+                          /   \
+                         |  o  |
+                          \___/
+                        _________
+                       /XXXXXXXXX\
+                      |XXXXXXXXXXX|
+                       \XXXXXXXXX/
+                         ~~~~~~~
+                          _____
+                       .~`     `~.
+                     .'           `.
+                    /   .--------.  \
+                   |   /          \  |
+                   |  |    _  _    | |
+                   |  |   o    o   | |
+                   |  |            | |
+                   |  |   \____/   | |
+                   |  |            | |
+                   |   \          /  |
+                    \   `--------`  /
+                     `.     \/     .'
+              ___      `._     _.'      ___
+             (   )         `~~~`         (   )
+              \_/                         \_/
+                \                         /
+                 \                       /
+                  \                     /
+                   \                   /
+                    `.               .'
+                      `.           .'
+                        `.       .'
+                          `.   .'
+                            `.'
+                           .'|`.
+                         .'  |  `.
+                        /    |    \
+                       |_____|_____|
+                         (  .  )
+                          `. .'
+                            `
+
+
+    "Howdy-Ho!" - Mr. Hankey, The Christmas Poo
 ```
