@@ -20,10 +20,10 @@ A lightweight GitHub composite action that creates or updates pull request comme
     body: |
       ## Deploying my-app 🚀
 
-      | Latest commit | ${{ github.sha }} |
-      |:--------------|:------------------|
-      | **Status** | ✅ Deploy successful! |
-      | **Environment** | production |
+      | Latest commit     | ${{ github.sha }}       |
+      |:------------------|:------------------------|
+      | **Status**        | ✅ Deploy successful!   |
+      | **Environment**   | production              |
 ```
 
 **Note:** The `issue-number` input is optional and will automatically use the current PR number if not specified.
@@ -110,10 +110,10 @@ jobs:
           body: |
             ## Deployment Status 🚀
 
-            | Latest commit | ${{ github.sha }} |
-            |:--------------|:------------------|
-            | **Status** | ${{ job.status == 'success' && '✅ Deployed' || '❌ Failed' }} |
-            | **URL** | ${{ steps.deploy.outputs.url }} |
+            | Latest commit | ${{ github.sha }}                                               |
+            |:--------------|:----------------------------------------------------------------|
+            | **Status**    | ${{ job.status == 'success' && '✅ Deployed' || '❌ Failed' }} |
+            | **URL**       | ${{ steps.deploy.outputs.url }}                                 |
 
             [View logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 ```
